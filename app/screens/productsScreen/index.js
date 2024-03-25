@@ -1,5 +1,5 @@
+import React, {useState} from 'react';
 import {Text} from 'react-native';
-import React from 'react';
 import axios from 'axios';
 import {useQuery} from 'react-query';
 import {
@@ -7,16 +7,16 @@ import {
   Progress,
   ProgressFilledTrack,
   ScrollView,
-  Toast,
-  ToastDescription,
-  ToastTitle,
-  useToast,
+  VStack,
+  Pressable,
 } from '@gluestack-ui/themed';
-import {VStack} from '@gluestack-ui/themed';
 
 import CustomProductsCard from './customProductsCard';
+import ProductsModal from '../../components/productsModal';
 
 const ProductsScreen = () => {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const productsQueryKey = 'getAllProducts';
 
   const getProducts = async () => {
@@ -29,25 +29,12 @@ const ProductsScreen = () => {
     getProducts,
   );
 
-  const toast = useToast();
+  const openProductDialog = product => {
+    setSelectedProduct(product);
+  };
 
-  const customToast = () => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => {
-        const toastId = 'toast-' + id;
-        return (
-          <Toast nativeID={toastId} variant="accent" action="error">
-            <VStack space="xs">
-              <ToastTitle>Network Error!</ToastTitle>
-              <ToastDescription>
-                The internet is not stable at your side. Please try again.
-              </ToastDescription>
-            </VStack>
-          </Toast>
-        );
-      },
-    });
+  const closeProductDialog = () => {
+    setSelectedProduct(null);
   };
 
   if (isLoading) {
@@ -70,16 +57,25 @@ const ProductsScreen = () => {
       <Box mx={10} my={20} gap={10}>
         {data &&
           data.map(product => (
-            <Box key={product.id}>
-              <CustomProductsCard
-                imageURL={product.image}
-                productTitle={product.title.split(' ').slice(0, 3).join(' ')}
-                productType={product.category}
-                productPrice={product.price}
-              />
-            </Box>
+            <Pressable
+              key={product.id}
+              onPress={() => openProductDialog(product)}>
+              <Box>
+                <CustomProductsCard
+                  imageURL={product.image}
+                  productTitle={product.title.split(' ').slice(0, 3).join(' ')}
+                  productType={product.category}
+                  productPrice={product.price}
+                />
+              </Box>
+            </Pressable>
           ))}
       </Box>
+
+      <ProductsModal
+        selectedProduct={selectedProduct}
+        closeProductDialog={closeProductDialog}
+      />
     </ScrollView>
   );
 };

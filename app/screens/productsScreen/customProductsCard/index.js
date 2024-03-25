@@ -13,7 +13,7 @@ const CustomProductsCard = ({
   productPrice,
 }) => {
   return (
-    <Card p="$2" borderRadius="$lg">
+    <Card p="$2" borderRadius="$lg" bg="white">
       <Image
         mb="$2"
         h={300}

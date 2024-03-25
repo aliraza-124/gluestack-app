@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, SafeAreaView, Platform} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 import {
   VStack,
   Button,
@@ -10,8 +10,7 @@ import {
   Progress,
   ProgressFilledTrack,
   Box,
-  ScrollView,
-  KeyboardAvoidingView,
+  FlatList,
 } from '@gluestack-ui/themed';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
@@ -22,6 +21,8 @@ import axios from 'axios';
 import {useQuery} from 'react-query';
 import {Text} from '@gluestack-ui/themed';
 import CustomProductsCard from '../productsScreen/customProductsCard';
+import ProductsModal from '../../components/productsModal';
+import {Pressable} from '@gluestack-ui/themed';
 
 const initialValues = {searchProduct: ''};
 
@@ -31,6 +32,8 @@ const validationSchema = Yup.object().shape({
 
 const SearchScreen = () => {
   const [temp, setTemp] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const productsQueryKey = 'getAllProducts';
 
   const getProducts = async () => {
@@ -42,28 +45,6 @@ const SearchScreen = () => {
     productsQueryKey,
     getProducts,
   );
-
-  const toast = useToast();
-
-  const customToast = () => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => {
-        const toastId = 'toast-' + id;
-        return (
-          <Toast nativeID={toastId} variant="accent" action="error">
-            <VStack space="xs">
-              <ToastTitle>Authentication Error!</ToastTitle>
-              <ToastDescription>
-                The username/password you provided is incorrect. Please try
-                again.
-              </ToastDescription>
-            </VStack>
-          </Toast>
-        );
-      },
-    });
-  };
 
   if (isLoading) {
     return (
@@ -80,87 +61,80 @@ const SearchScreen = () => {
     return <Box>{error.message}</Box>;
   }
 
+  const openProductDialog = product => {
+    setSelectedProduct(product);
+  };
+
+  const closeProductDialog = () => {
+    setSelectedProduct(null);
+  };
+
   return (
-    // <KeyboardAvoidingView
-    //   behavior={Platform.OS === 'ios' ? 'height' : 'height'}
-    //   style={{flex: 1, zIndex: 999}}>
-      <SafeAreaView style={styles.container}>
-        <VStack space="md" style={styles.styledVStack}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={(values, actions) => {
-              const {searchProduct} = values;
-              setTemp(searchProduct);
-              actions.setSubmitting(false);
-            }}>
-            {({handleChange, handleSubmit, errors, isSubmitting}) => (
-              <>
-                <GSInputField
-                  fieldName="Product Name/Category"
-                  fieldType="text"
-                  onChangeText={handleChange('searchProduct')}
-                  fieldPlaceholder="iPhone 15 pro max/electronics"
-                  errors={errors.searchProduct}
-                />
+    <SafeAreaView style={styles.container}>
+      <VStack space="md" style={styles.styledVStack}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values, actions) => {
+            const {searchProduct} = values;
+            setTemp(searchProduct);
+            actions.setSubmitting(false);
+          }}>
+          {({handleChange, handleSubmit, errors, isSubmitting}) => (
+            <>
+              <GSInputField
+                fieldName="Product Name/Category"
+                fieldType="text"
+                onChangeText={handleChange('searchProduct')}
+                fieldPlaceholder="iPhone 15 pro max/electronics"
+                errors={errors.searchProduct}
+              />
 
-                <Button
-                  variant="outline"
-                  borderColor="red"
-                  backgroundColor="black"
-                  onPress={handleSubmit}>
-                  <ButtonText color="white">Search</ButtonText>
-                </Button>
-              </>
-            )}
-          </Formik>
-        </VStack>
+              <Button
+                variant="outline"
+                borderColor="red"
+                backgroundColor="black"
+                onPress={handleSubmit}>
+                <ButtonText color="white">Search</ButtonText>
+              </Button>
+            </>
+          )}
+        </Formik>
+      </VStack>
 
-        <ScrollView>
-          <Text>Input: {temp}</Text>
-          <Box mx={10} my={16} gap={10}>
-            {/*  {data &&
-            data.map(product => (
-              <Box key={product.id}>
-                <CustomProductsCard
-                  imageURL={product.image}
-                  productTitle={product.title.split(' ').slice(0, 3).join(' ')}
-                  productType={product.category}
-                  productPrice={product.price}
-                />
+      <FlatList
+        data={data}
+        keyExtractor={item => item.id.toString()}
+        // ListHeaderComponent={<Text>Input: {temp}</Text>}
+        renderItem={({item}) => {
+          if (
+            !temp ||
+            item.title.toLowerCase().includes(temp.trim().toLowerCase()) ||
+            item.category.toLowerCase().includes(temp.trim().toLowerCase())
+          ) {
+            return (
+              <Box key={item.id} mx={10} my={6}>
+                <Pressable
+                  key={item.id}
+                  onPress={() => openProductDialog(item)}>
+                  <CustomProductsCard
+                    imageURL={item.image}
+                    productTitle={item.title.split(' ').slice(0, 3).join(' ')}
+                    productType={item.category}
+                    productPrice={item.price}
+                  />
+                </Pressable>
               </Box>
-            ))} */}
+            );
+          }
+        }}
+      />
 
-            {data &&
-              data
-                .filter(product => {
-                  if (!temp) {
-                    return true;
-                  } else {
-                    // If search term provided, filter products by title or category
-                    return (
-                      product.title.toLowerCase() === temp.toLowerCase() ||
-                      product.category.toLowerCase() === temp.toLowerCase() 
-                    );
-                  }
-                })
-                .map(product => (
-                  <Box key={product.id}>
-                    <CustomProductsCard
-                      imageURL={product.image}
-                      productTitle={product.title
-                        .split(' ')
-                        .slice(0, 3)
-                        .join(' ')}
-                      productType={product.category}
-                      productPrice={product.price}
-                    />
-                  </Box>
-                ))}
-          </Box>
-        </ScrollView>
-      </SafeAreaView>
-    // </KeyboardAvoidingView>
+      <ProductsModal
+        selectedProduct={selectedProduct}
+        closeProductDialog={closeProductDialog}
+      />
+    </SafeAreaView>
   );
 };
 
@@ -178,28 +152,48 @@ const styles = StyleSheet.create({
 
 export default SearchScreen;
 
-// import {FlatList, View, Text} from 'react-native';
+///////////////////////////////////////////////////////////
+/* <ScrollView>
+        <Text>Input: {temp}</Text>
+        <Box mx={10} my={16} gap={10}> */
 
-// const data = [
-//   {id: '1', name: 'Item 1'},
-//   {id: '2', name: 'Item 2'},
-//   // Add more items as needed
-// ];
+/*  {data &&
+            data.map(product => (
+              <Box key={product.id}>
+                <CustomProductsCard
+                  imageURL={product.image}
+                  productTitle={product.title.split(' ').slice(0, 3).join(' ')}
+                  productType={product.category}
+                  productPrice={product.price}
+                />
+              </Box>
+            ))} */
 
-// const renderItem = ({item}) => (
-//   <View>
-//     <Text>{item.name}</Text>
-//   </View>
-// );
+/* {data &&
+            data
+              .filter(product => {
+                if (!temp) {
+                  return true;
+                } else {
+                  return (
+                    product.title.toLowerCase() === temp.toLowerCase() ||
+                    product.category.toLowerCase() === temp.toLowerCase()
+                  );
+                }
+              })
+              .map(product => (
+                <Box key={product.id}>
+                  <CustomProductsCard
+                    imageURL={product.image}
+                    productTitle={product.title
+                      .split(' ')
+                      .slice(0, 3)
+                      .join(' ')}
+                    productType={product.category}
+                    productPrice={product.price}
+                  />
+                </Box>
+              ))} */
 
-// const SearchScreen = () => {
-//   return (
-//     <FlatList
-//       data={data}
-//       renderItem={renderItem}
-//       keyExtractor={item => item.id}
-//     />
-//   );
-// };
-
-// export default SearchScreen;
+/* </Box>
+      </ScrollView> */

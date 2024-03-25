@@ -1,7 +1,7 @@
 import {Alert} from 'react-native';
 
 const GSAlertBox = () => {
-  const showAlert = (title, description, option1, option2, navigation, ScreenName) => {
+  const showAlert = (title, description, option1, option2, navigation) => {
     Alert.alert(
       title,
       description,

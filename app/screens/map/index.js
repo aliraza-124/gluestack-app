@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Heading, Box} from '@gluestack-ui/themed';
 import {PermissionsAndroid, Platform} from 'react-native';
 import GetLocation from 'react-native-get-location';
+import MapView from 'react-native-maps';
 
 const MapScreen = () => {
   const [locationData, setLocationData] = useState(null);
@@ -73,6 +74,16 @@ const MapScreen = () => {
   return (
     <Box p={20} gap={10}>
       {showLocation()}
+
+      <MapView
+        style={{width: '100%', height: '60%', marginTop: '10%'}}
+        initialRegion={{
+          latitude: locationData ? locationData.latitude : 37.78825,
+          longitude: locationData ? locationData.longitude : -122.4324,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      />
     </Box>
   );
 };

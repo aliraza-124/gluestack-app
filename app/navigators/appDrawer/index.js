@@ -46,21 +46,7 @@ function AppDrawer({navigation}) {
         component={AppBottomTabs}
         options={{title: 'Dashboard'}}
       />
-      <Drawer.Screen
-        name="About"
-        component={AboutScreen}
-        // options={{
-        //   // eslint-disable-next-line react/no-unstable-nested-components
-        //   drawerIcon: ({color, size}) => (
-        //     <Icon
-        //       name="power-off"
-        //       color={color}
-        //       size={20}
-        //       style={{padding: 0}}
-        //     />
-        //   ),
-        // }}
-      />
+      <Drawer.Screen name="About" component={AboutScreen} />
       <Drawer.Screen name="QRCode" component={QRCodeScanner} />
       <Drawer.Screen name="Map - working" component={MapScreen} />
     </Drawer.Navigator>

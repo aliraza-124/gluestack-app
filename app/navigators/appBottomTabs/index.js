@@ -16,7 +16,7 @@ const Bottom = createBottomTabNavigator();
 const AppBottomTabs = () => {
   return (
     <Bottom.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="ProductsScreen"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#D81B60',
