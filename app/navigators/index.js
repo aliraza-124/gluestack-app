@@ -16,7 +16,7 @@ const AppNavigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="AppDrawer"
+        initialRouteName="Registration"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="GetStarted" component={GetStartedScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />

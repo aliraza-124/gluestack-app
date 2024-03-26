@@ -14,6 +14,7 @@ const GSInputField = ({
   fieldType,
   fieldPlaceholder,
   onChangeText,
+  value,
   errors,
 }) => {
   return (
@@ -26,6 +27,7 @@ const GSInputField = ({
           type={fieldType}
           placeholder={fieldPlaceholder}
           onChangeText={onChangeText}
+          value={value}
         />
       </Input>
       {errors && <Text style={styles.styledError}>{errors}</Text>}

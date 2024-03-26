@@ -4,7 +4,6 @@
 import React from 'react';
 import {
   createDrawerNavigator,
-  DrawerContent,
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
@@ -21,38 +20,37 @@ const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const {navigation} = props;
   const {showAlert} = GSAlertBox();
-
+  
   return (
     <DrawerContentScrollView {...props}>
       <Box
+      top={0}
+        py={20}
+        px={10}
+        gap={2}
+        bg="$pink600"
         style={{
           alignItems: 'center',
-          marginTop: 20,
-          marginBottom: 20,
-          backgroundColor: 'red',
         }}>
         <Image
-          source={require('../../../assets/images/beverage.jpg')}
+          source={require('../../../assets/images/profile.jpg')}
+          alt="Profile Photo"
           style={{width: 80, height: 80, borderRadius: 40, marginBottom: 10}}
         />
-        <Text style={{fontSize: 18, fontWeight: 'bold', marginBottom: 10}}>
-          John Doe
+        <Text style={{fontSize: 18, fontWeight: 'bold',  color: "white"}}>
+          ALi Raza
         </Text>
-        <Text style={{fontSize: 14, color: '#666', marginBottom: 20}}>
-          johndoe@example.com
+        <Text style={{fontSize: 14,  color: "white"}}>
+          aliraza@gmail.com
         </Text>
       </Box>
+      
       <DrawerItem
         label="Dashboard"
         onPress={() => navigation.navigate('Dashboard1')}
-        icon={() => <Icon name="home" size={20} color="#000" />}
+        icon={() => <Icon name="house" size={20} color="#000" />}
       />
 
-      <DrawerItem
-        label="Dashboard"
-        onPress={() => navigation.navigate('Dashboard1')}
-        icon={() => <Icon name="home" size={20} color="#000" />}
-      />
       <DrawerItem
         label="About"
         onPress={() => navigation.navigate('About')}
@@ -86,7 +84,9 @@ function CustomDrawerContent(props) {
   );
 }
 
-function AppDrawer() {
+function AppDrawer({navigation}) {
+  const {showAlert} = GSAlertBox();
+  
   return (
     <Drawer.Navigator
       initialRouteName="Dashboard1"
@@ -96,7 +96,29 @@ function AppDrawer() {
       }}
       screenOptions={{
         headerTitleAlign: 'center',
+
+        headerRight: () => (
+          <Icon
+            name="power-off"
+            size={20}
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{color: '#D81B60', marginRight: 16}}
+            onPress={() =>
+              showAlert(
+                'Logout',
+                'Are you sure you want to log out?',
+                'No',
+                'Yes',
+                navigation,
+                'Login',
+              )
+            }
+          />
+        ),
+
       }}>
+
+
       <Drawer.Screen
         name="Dashboard1"
         component={AppBottomTabs}

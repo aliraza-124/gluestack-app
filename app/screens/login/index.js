@@ -26,7 +26,8 @@ import {AlertDialogFooter} from '@gluestack-ui/themed';
 
 import GSInputField from '../../components/gsInputField';
 import {ToastDescription} from '@gluestack-ui/themed';
-import useAuthentication from '../../utils/authUtils';
+
+import { useAuth } from '../../utils/authUtils';
 
 const initialValues = {email: '', password: ''};
 
@@ -36,8 +37,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const LoginScreen = ({navigation}) => {
-  const {authenticateUser} = useAuthentication();
-
+  const { authenticateUser } = useAuth();
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   const toast = useToast();
@@ -81,20 +81,21 @@ const LoginScreen = ({navigation}) => {
               const authenticate = authenticateUser(email, password);
 
               if (authenticate) {
-                actions.setSubmitting(false);
-                // actions.resetForm();
-                setShowAlertDialog(true);
                 navigation.navigate('AppDrawer');
+                setShowAlertDialog(true);
+                actions.resetForm();
+                actions.setSubmitting(false);
               } else {
                 customToast();
               }
             }}>
-            {({handleChange, handleSubmit, errors, isSubmitting}) => (
+            {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
               <>
                 <GSInputField
                   fieldName="Email"
                   fieldType="text"
                   onChangeText={handleChange('email')}
+                  value={values.email}
                   fieldPlaceholder="test@example.com"
                   errors={errors.email}
                 />
@@ -103,6 +104,7 @@ const LoginScreen = ({navigation}) => {
                   fieldName="Password"
                   fieldType="password"
                   onChangeText={handleChange('password')}
+                  value={values.password}
                   fieldPlaceholder="******"
                   errors={errors.password}
                 />

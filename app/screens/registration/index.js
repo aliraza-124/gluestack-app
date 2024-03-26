@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
+import {StyleSheet, SafeAreaView, Platform} from 'react-native';
 import {
   ImageBackground,
   VStack,
@@ -16,7 +16,10 @@ import {ToastTitle} from '@gluestack-ui/themed';
 import {ToastDescription} from '@gluestack-ui/themed';
 
 import GSInputField from '../../components/gsInputField';
-import useAuthentication from '../../utils/authUtils';
+import { useAuth } from '../../utils/authUtils';
+
+
+const initialValues = {name: '', email: '', password: ''};
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -25,7 +28,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegistrationScreen = ({navigation}) => {
-  const {auth, registerUser} = useAuthentication();
+  const { registerUser } = useAuth();
 
   const toast = useToast();
 
@@ -60,24 +63,25 @@ const RegistrationScreen = ({navigation}) => {
           </Heading>
 
           <Formik
-            initialValues={{name: '', email: '', password: ''}}
+            initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values, actions) => {
               const {name, email, password} = values;
               customToast(name);
 
-              console.warn('Pre Array: ', auth);
               registerUser(name, email, password);
 
               navigation.navigate('Login');
+              actions.resetForm();
               actions.setSubmitting(false);
             }}>
-            {({handleChange, handleSubmit, errors, isSubmitting}) => (
+            {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
               <>
                 <GSInputField
                   fieldName="Name"
                   fieldType="text"
                   onChangeText={handleChange('name')}
+                  value={values.name}
                   fieldPlaceholder="example name"
                   errors={errors.name}
                 />
@@ -86,6 +90,7 @@ const RegistrationScreen = ({navigation}) => {
                   fieldName="Email"
                   fieldType="text"
                   onChangeText={handleChange('email')}
+                  value={values.email}
                   fieldPlaceholder="test@example.com"
                   errors={errors.email}
                 />
@@ -94,6 +99,7 @@ const RegistrationScreen = ({navigation}) => {
                   fieldName="Password"
                   fieldType="password"
                   onChangeText={handleChange('password')}
+                  value={values.password}
                   fieldPlaceholder="******"
                   errors={errors.password}
                 />
