@@ -4,8 +4,11 @@ import {Box, Button, Heading, VStack} from '@gluestack-ui/themed';
 import {Modal} from '@gluestack-ui/themed';
 import {Image} from '@gluestack-ui/themed';
 import {ButtonText} from '@gluestack-ui/themed';
+import SuccessToast from '../customSuccessToast';
 
 const ProductsModal = ({selectedProduct, closeProductDialog}) => {
+  const {customToast} = SuccessToast();
+
   return (
     <Box>
       <Modal
@@ -77,7 +80,9 @@ const ProductsModal = ({selectedProduct, closeProductDialog}) => {
                   mb: '$0',
                   flex: 1,
                 },
-              }}>
+              }}
+              onPress={() => customToast("Success Box!", "The chosen product has been added successfully.", "info")}
+              >
               <ButtonText size="sm">Add to cart</ButtonText>
             </Button>
             <Button

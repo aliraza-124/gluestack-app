@@ -5,6 +5,7 @@ import {Box} from '@gluestack-ui/themed';
 import {Button} from '@gluestack-ui/themed';
 import {ButtonText} from '@gluestack-ui/themed';
 import {Heading} from '@gluestack-ui/themed';
+import SuccessToast from '../../../components/customSuccessToast';
 
 const CustomProductsCard = ({
   imageURL,
@@ -12,6 +13,9 @@ const CustomProductsCard = ({
   productType,
   productPrice,
 }) => {
+
+  const {customToast} = SuccessToast();
+
   return (
     <Card p="$2" borderRadius="$lg" bg="white">
       <Image
@@ -62,7 +66,9 @@ const CustomProductsCard = ({
               mb: '$0',
               flex: 1,
             },
-          }}>
+          }}
+          onPress={() => customToast("Success Box!", "The chosen product has been added successfully.", "info")}
+          >
           <ButtonText size="sm">Add to cart</ButtonText>
         </Button>
         <Button
@@ -76,7 +82,9 @@ const CustomProductsCard = ({
             '@sm': {
               flex: 1,
             },
-          }}>
+          }}
+          onPress={() => customToast("Success Box!", "The selected product has been added to the wishlist.", "attention")}
+          >
           <ButtonText
             size="sm"
             color="$textLight600"
