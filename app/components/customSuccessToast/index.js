@@ -8,6 +8,7 @@ const SuccessToast = () => {
   const customToast = (title, description, action) => {
     toast.show({
       placement: 'top',
+      duration: 2000,
       render: ({id}) => {
         const toastId = 'toast-' + id;
         return (
